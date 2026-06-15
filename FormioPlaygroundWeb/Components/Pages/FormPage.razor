@@ -1,0 +1,22 @@
+@page "/form/{Name}"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject IWebHostEnvironment Env
+@inject ILogger<FormPage> Logger
+@using System.Text.Json
+
+<PageTitle>@(_title ?? Name)</PageTitle>
+
+<a href="/" class="btn btn-sm btn-outline-secondary mb-3">&larr; Dashboard</a>
+<h2>@(_title ?? Name)</h2>
+
+@* form.io mountet in dieses div; Blazor rendert hier kein eigenes Markup rein *@
+<div id="formio-container"></div>
+
+@if (_submissionJson is not null)
+{
+    <hr />
+    <h5 class="mt-3">Submission (empfangen im .NET-Backend)</h5>
+    <pre class="bg-light border rounded p-3"><code>@_submissionJson</code></pre>
+}

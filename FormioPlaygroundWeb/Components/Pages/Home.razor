@@ -1,7 +1,42 @@
-﻿@page "/"
+@page "/"
+@rendermode InteractiveServer
+@inject IWebHostEnvironment Env
+@using System.Text.Json
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Formulare</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Formulare</h1>
 
-Welcome to your new app.
+@if (_forms is null)
+{
+    <p>Lade&hellip;</p>
+}
+else if (_forms.Count == 0)
+{
+    <p class="text-muted">Keine Formulare in wwwroot/forms/index.json gefunden.</p>
+}
+else
+{
+    <ul class="list-group" style="max-width: 400px;">
+        @foreach (var f in _forms)
+        {
+            <li class="list-group-item">
+                <a href="/form/@f.Name">@f.Title</a>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<FormEntry>? _forms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var path = Path.Combine(Env.WebRootPath, "forms", "index.json");
+        var json = await File.ReadAllTextAsync(path);
+        _forms = JsonSerializer.Deserialize<List<FormEntry>>(
+            json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [];
+    }
+
+    private record FormEntry(string Title, string Name);
+}

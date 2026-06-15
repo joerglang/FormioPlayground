@@ -1,0 +1,45 @@
+{
+  "display": "form",
+  "title": "Bestellformular",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "vorname",
+      "label": "Vorname",
+      "placeholder": "Max",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "email",
+      "key": "email",
+      "label": "E-Mail",
+      "placeholder": "max@beispiel.ch",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "key": "produkt",
+      "label": "Produkt",
+      "dataSrc": "values",
+      "input": true,
+      "data": {
+        "values": [
+          { "label": "Produkt A – Basic",      "value": "produkt_a" },
+          { "label": "Produkt B – Pro",         "value": "produkt_b" },
+          { "label": "Produkt C – Enterprise",  "value": "produkt_c" }
+        ]
+      },
+      "validate": { "required": true }
+    },
+    {
+      "type": "button",
+      "action": "submit",
+      "label": "Bestellen",
+      "key": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}

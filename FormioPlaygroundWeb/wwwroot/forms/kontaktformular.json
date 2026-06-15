@@ -1,0 +1,45 @@
+{
+  "display": "form",
+  "title": "Kontaktformular",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "name",
+      "label": "Name",
+      "placeholder": "Vor- und Nachname",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "email",
+      "key": "email",
+      "label": "E-Mail-Adresse",
+      "placeholder": "name@beispiel.ch",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "type": "select",
+      "key": "thema",
+      "label": "Thema",
+      "dataSrc": "values",
+      "input": true,
+      "data": {
+        "values": [
+          { "label": "Allgemeine Anfrage",   "value": "allgemein" },
+          { "label": "Technischer Support",  "value": "support"   },
+          { "label": "Vertrieb / Angebot",   "value": "vertrieb"  }
+        ]
+      },
+      "validate": { "required": true }
+    },
+    {
+      "type": "button",
+      "action": "submit",
+      "label": "Absenden",
+      "key": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}

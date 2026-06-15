@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="de">
 
 <head>
     <meta charset="utf-8"/>
@@ -7,6 +7,10 @@
     <base href="/"/>
     <ResourcePreloader/>
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]"/>
+    <!-- Bootstrap Icons 1.11.3 via CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <!-- form.io Renderer – CDN liefert aktuellste 4.x-Version; in Prod auf feste Version pinnen, z.B. formio.full.4.21.5.min.css -->
+    <link rel="stylesheet" href="https://cdn.form.io/formiojs/formio.full.min.css"/>
     <link rel="stylesheet" href="@Assets["app.css"]"/>
     <link rel="stylesheet" href="@Assets["FormioPlaygroundWeb.styles.css"]"/>
     <ImportMap/>
@@ -17,6 +21,9 @@
 <body>
 <Routes/>
 <ReconnectModal/>
+<!-- form.io Renderer (formiojs, aktuelle 4.x) – muss vor formio-interop.js stehen -->
+<script src="https://cdn.form.io/formiojs/formio.full.min.js"></script>
+<script src="js/formio-interop.js"></script>
 <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 
