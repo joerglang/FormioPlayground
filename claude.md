@@ -2,7 +2,8 @@
 
 ## Zweck
 Prototyp zur Evaluation des form.io-Renderers in einem .NET/Blazor-Host. Wegwerf-Code, kein
-Produktionsanspruch. Ablauf: Dashboard listet Formulare -> Klick rendert die Form via form.io ->
+Produktionsanspruch. Aber Code muss so gut sein, dass Teile davon in die Produktion übernommen werden können. 
+Ablauf: Dashboard listet Formulare -> Klick rendert die Form via form.io ->
 Submit schickt das Submission-JSON zurück ins .NET-Backend.
 
 ## Architektur (vorläufig, NICHT final)
