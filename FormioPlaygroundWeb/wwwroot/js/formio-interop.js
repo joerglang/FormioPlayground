@@ -3,6 +3,17 @@ window.formioInterop = {
 
     createForm: function (elementId, schema, dotNetRef) {
         var el = document.getElementById(elementId);
+        // Submit-Button hinzufügen falls im Schema nicht vorhanden
+        var hasSubmit = Array.isArray(schema.components) &&
+            schema.components.some(function (c) { return c.type === 'button' && c.action === 'submit'; });
+        if (!hasSubmit) {
+            schema = Object.assign({}, schema, {
+                components: (schema.components || []).concat([{
+                    type: 'button', action: 'submit', label: 'Absenden',
+                    key: 'submit', theme: 'primary', input: true
+                }])
+            });
+        }
         Formio.createForm(el, schema).then(function (form) {
             window.formioInterop._form = form;
             form.on('submit', function (submission) {

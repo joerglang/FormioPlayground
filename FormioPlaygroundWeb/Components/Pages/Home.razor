@@ -1,42 +1,93 @@
 @page "/"
 @rendermode InteractiveServer
 @inject IWebHostEnvironment Env
+@inject FormioPlaygroundWeb.Services.FormIoService FormIo
 @using System.Text.Json
+@using FormioPlaygroundWeb.Services
 
 <PageTitle>Formulare</PageTitle>
 
 <h1>Formulare</h1>
 
-@if (_forms is null)
+@if (_loading)
 {
     <p>Lade&hellip;</p>
 }
-else if (_forms.Count == 0)
-{
-    <p class="text-muted">Keine Formulare in wwwroot/forms/index.json gefunden.</p>
-}
 else
 {
-    <ul class="list-group" style="max-width: 400px;">
-        @foreach (var f in _forms)
-        {
-            <li class="list-group-item">
-                <a href="/form/@f.Name">@f.Title</a>
-            </li>
-        }
-    </ul>
+    <h5 class="mt-3">Lokal (wwwroot/forms/)</h5>
+    @if (_localForms.Count == 0)
+    {
+        <p class="text-muted">Keine Formulare in index.json.</p>
+    }
+    else
+    {
+        <ul class="list-group mb-4" style="max-width: 480px;">
+            @foreach (var f in _localForms)
+            {
+                <li class="list-group-item">
+                    <a href="/form/@f.Name">@f.Title</a>
+                </li>
+            }
+        </ul>
+    }
+
+    <h5>Portal (form.io)</h5>
+    @if (_portalError is not null)
+    {
+        <div class="alert alert-warning py-2">Portal nicht erreichbar: @_portalError</div>
+    }
+    else if (_portalForms.Count == 0)
+    {
+        <p class="text-muted">Keine Portal-Formulare gefunden (oder Zugangsdaten fehlen).</p>
+    }
+    else
+    {
+        <ul class="list-group" style="max-width: 480px;">
+            @foreach (var f in _portalForms)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="/portal/@f.Path">@f.Title</a>
+                    <span class="badge bg-secondary">@f.Path</span>
+                </li>
+            }
+        </ul>
+    }
 }
 
 @code {
-    private List<FormEntry>? _forms;
+    private bool _loading = true;
+    private List<LocalForm> _localForms = [];
+    private IReadOnlyList<PortalForm> _portalForms = [];
+    private string? _portalError;
 
     protected override async Task OnInitializedAsync()
     {
+        var localTask = LoadLocalFormsAsync();
+        var portalTask = LoadPortalFormsAsync();
+        await Task.WhenAll(localTask, portalTask);
+        _loading = false;
+    }
+
+    private async Task LoadLocalFormsAsync()
+    {
         var path = Path.Combine(Env.WebRootPath, "forms", "index.json");
         var json = await File.ReadAllTextAsync(path);
-        _forms = JsonSerializer.Deserialize<List<FormEntry>>(
+        _localForms = JsonSerializer.Deserialize<List<LocalForm>>(
             json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? [];
     }
 
-    private record FormEntry(string Title, string Name);
+    private async Task LoadPortalFormsAsync()
+    {
+        try
+        {
+            _portalForms = await FormIo.GetFormsAsync();
+        }
+        catch (Exception ex)
+        {
+            _portalError = ex.Message;
+        }
+    }
+
+    private record LocalForm(string Title, string Name);
 }
