@@ -14,9 +14,9 @@ public partial class PortalFormPage
     private bool _jsInitialized;
     private DotNetObjectReference<PortalFormPage>? _dotNetRef;
 
-    protected override async Task OnInitializedAsync()
+	protected override async Task OnInitializedAsync()
     {
-        _schemaJson = await FormIo.GetFormSchemaAsync(FormPath);
+		_schemaJson = await FormIo.GetFormSchemaAsync(FormPath);
         if (_schemaJson is null)
         {
             _notFound = true;
@@ -30,27 +30,52 @@ public partial class PortalFormPage
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Nicht firstRender prüfen: bei async OnInitializedAsync feuert firstRender=true
-        // bevor der HTTP-Call fertig ist → _schemaJson wäre null. Deshalb Flag-Ansatz.
-        if (_jsInitialized || _schemaJson is null) return;
+		// Nicht firstRender prüfen: bei async OnInitializedAsync feuert firstRender=true
+		// bevor der HTTP-Call fertig ist → _schemaJson wäre null. Deshalb Flag-Ansatz.
+		if (_jsInitialized || _schemaJson is null) return;
         _jsInitialized = true;
         _dotNetRef = DotNetObjectReference.Create(this);
         var schema = JsonDocument.Parse(_schemaJson).RootElement;
-        await JS.InvokeVoidAsync("formioInterop.createForm", "formio-container", schema, _dotNetRef);
-    }
+        var url = FormIo.GetFormUrl(FormPath);
+		await JS.InvokeVoidAsync("formioInterop.createFormByUrl", "formio-container", url, _dotNetRef);
+	}
 
-    [JSInvokable]
+	[JSInvokable]
     public void OnFormSubmitted(string json)
     {
         // Breakpoint hier
         Logger.LogInformation("Portal-Form submitted: {Json}", json);
-        _submissionJson = json;
+        //_submissionJson = json;
         StateHasChanged();
     }
 
-    public async ValueTask DisposeAsync()
+	[JSInvokable]
+	public void OnSubmitDone(string json)
+	{
+		// Breakpoint hier
+		Logger.LogInformation("Portal-Form Submit done: {Json}", json);
+
+		var element = JsonSerializer.Deserialize<JsonElement>(json);
+		_submissionJson = JsonSerializer.Serialize(
+			element,
+	        new JsonSerializerOptions
+	        {
+		        WriteIndented = true
+	        });
+
+		StateHasChanged();
+	}
+
+	public async ValueTask DisposeAsync()
     {
-        await JS.InvokeVoidAsync("formioInterop.destroyForm");
+        try
+        {
+			await JS.InvokeVoidAsync("formioInterop.destroyForm");
+		}
+		catch (JSDisconnectedException)
+        {
+        }
+
         _dotNetRef?.Dispose();
     }
 }

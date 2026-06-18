@@ -24,6 +24,23 @@ window.formioInterop = {
         });
     },
 
+    createFormByUrl: function (elementId, url, dotNetRef) {
+        var el = document.getElementById(elementId);
+        Formio.createForm(el, url).then(function (form) {
+            window.formioInterop._form = form;
+            form.on('submit', function (submission) {
+                dotNetRef.invokeMethodAsync('OnFormSubmitted', JSON.stringify(submission.data));
+            });
+            form.on('submitDone', function (submission) {
+                console.log(submission);
+                dotNetRef.invokeMethodAsync(
+                    'OnSubmitDone',
+                    JSON.stringify(submission)
+                );
+            });
+        });
+    },
+
     destroyForm: function () {
         if (window.formioInterop._form) {
             window.formioInterop._form.destroy();

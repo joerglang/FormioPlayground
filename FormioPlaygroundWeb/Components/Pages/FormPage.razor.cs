@@ -11,8 +11,9 @@ public partial class FormPage
     private string? _schemaJson;
     private string? _submissionJson;
     private DotNetObjectReference<FormPage>? _dotNetRef;
+	private bool _formCreated;
 
-    protected override async Task OnInitializedAsync()
+	protected override async Task OnInitializedAsync()
     {
         var path = Path.Combine(Env.WebRootPath, "forms", $"{Name}.json");
         _schemaJson = await File.ReadAllTextAsync(path);
@@ -27,7 +28,9 @@ public partial class FormPage
         _dotNetRef = DotNetObjectReference.Create(this);
         var schema = JsonDocument.Parse(_schemaJson!).RootElement;
         await JS.InvokeVoidAsync("formioInterop.createForm", "formio-container", schema, _dotNetRef);
-    }
+
+		_formCreated = true;
+	}
 
     [JSInvokable]
     public void OnFormSubmitted(string json)
@@ -40,7 +43,11 @@ public partial class FormPage
 
     public async ValueTask DisposeAsync()
     {
-        await JS.InvokeVoidAsync("formioInterop.destroyForm");
+        if (_formCreated)
+        {
+            await JS.InvokeVoidAsync("formioInterop.destroyForm");
+        }
+
         _dotNetRef?.Dispose();
     }
 }

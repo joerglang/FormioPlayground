@@ -1,6 +1,5 @@
-using System.Net.Http.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
+using System.Text.Json.Serialization;
 
 namespace FormioPlaygroundWeb.Services;
 
@@ -66,7 +65,13 @@ public sealed class FormIoService(
         return await resp.Content.ReadAsStringAsync();
     }
 
-    private async Task<(string Name, string Value)?> GetAuthHeaderAsync()
+    public string GetFormUrl(string formPath)
+    {
+		var url = new Uri(new Uri(_cfg!.BaseUrl!.TrimEnd('/') + "/"), formPath.TrimStart('/'));
+		return url.ToString();
+	}
+
+	private async Task<(string Name, string Value)?> GetAuthHeaderAsync()
     {
         if (!string.IsNullOrWhiteSpace(_cfg.ApiKey))
             return ("x-token", _cfg.ApiKey);
