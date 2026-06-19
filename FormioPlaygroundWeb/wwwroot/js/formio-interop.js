@@ -1,6 +1,10 @@
 window.formioInterop = {
     _form: null,
 
+    setToken: function (jwtToken) {
+        localStorage.setItem('formioToken', jwtToken);
+    },
+
     createForm: function (elementId, schema, dotNetRef) {
         var el = document.getElementById(elementId);
         // Submit-Button hinzufügen falls im Schema nicht vorhanden
