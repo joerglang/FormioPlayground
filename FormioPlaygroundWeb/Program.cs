@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
 // form.io Portal-Zugangsdaten aus User Secrets / Umgebungsvariablen
 builder.Services.Configure<FormIoSettings>(builder.Configuration.GetSection("FormIo"));
 builder.Services.AddHttpClient<FormIoService>();
+builder.Services.AddSingleton<GemeindenService>();
 
 var app = builder.Build();
 
@@ -22,6 +23,9 @@ app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages:
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();
+
+app.MapGet("/api/gemeinden/{plz}", (string plz, GemeindenService svc) =>
+    Results.Ok(svc.FindByPlz(plz).Select(g => new { label = g, value = g })));
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
