@@ -92,7 +92,7 @@ public sealed class FormIoService(
         return await http.SendAsync(req);
     }
 
-    private async Task<string?> LoginAsync()
+    public async Task<string?> LoginAsync()
     {
         var loginUrl = !string.IsNullOrWhiteSpace(_cfg.LoginUrl)
             ? _cfg.LoginUrl

@@ -1,6 +1,11 @@
 window.formioInterop = {
     _form: null,
 
+    // JWT-Token für form.io-Authentifizierung setzen (z.B. nach Login)
+    setToken: function (jwtToken) {
+        localStorage.setItem('formioToken', jwtToken);
+     },
+
     // Gemeinsame form.io-Optionen (Sprache / Übersetzungen)
     _options: {
         language: 'de',

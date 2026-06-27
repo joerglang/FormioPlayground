@@ -37,6 +37,8 @@ public partial class PortalFormPage
         _dotNetRef = DotNetObjectReference.Create(this);
         var schema = JsonDocument.Parse(_schemaJson).RootElement;
         var url = FormIo.GetFormUrl(FormPath);
+        var jwtToken = await FormIo.LoginAsync();
+		await JS.InvokeVoidAsync("formioInterop.setToken", jwtToken);
 		await JS.InvokeVoidAsync("formioInterop.createFormByUrl", "formio-container", url, _dotNetRef);
 	}
 
